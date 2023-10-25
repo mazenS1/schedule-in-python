@@ -1,6 +1,7 @@
 import itertools
 import tkinter as tk
-from prettytable import PrettyTable
+from prettytable import PrettyTable 
+from tkinter import ttk
 
 class Schedule:
     def __init__(self, id, name, day1, start_time, end_time, day2=None, start_time2=None, end_time2=None, day3=None, start_time3=None, end_time3=None):
@@ -158,37 +159,70 @@ class ScheduleGeneratorGUI:
         self.course_list = []
 
     def add_course(self):
-        course_id = self.id_entry.get()
-        course_name = self.name_entry.get()
-        day1 = self.day1_entry.get()
-        start1 = self.start1_entry.get()
-        end1 = self.end1_entry.get()
-        day2 = self.day2_entry.get()
-        start2 = self.start2_entry.get()
-        end2 = self.end2_entry.get()
-        day3 = self.day3_entry.get()
-        start3 = self.start3_entry.get()
-        end3 = self.end3_entry.get()
-        course = Schedule(int(course_id), course_name, day1, start1, end1, day2, start2, end2, day3, start3, end3)
-        self.course_list.append(course)
-        self.id_entry.delete(0, tk.END)
-        self.name_entry.delete(0, tk.END)
-        self.day1_entry.delete(0, tk.END)
-        self.start1_entry.delete(0, tk.END)
-        self.end1_entry.delete(0, tk.END)
-        self.day2_entry.delete(0, tk.END)
-        self.start2_entry.delete(0, tk.END)
-        self.end2_entry.delete(0, tk.END)
-        self.day3_entry.delete(0, tk.END)
-        self.start3_entry.delete(0, tk.END)
-        self.end3_entry.delete(0, tk.END)
+            course_id = self.id_entry.get()
+            course_name = self.name_entry.get()
+            day1 = self.day1_entry.get()
+            start1 = self.start1_entry.get()
+            end1 = self.end1_entry.get()
+            day2 = self.day2_entry.get()
+            start2 = self.start2_entry.get()
+            end2 = self.end2_entry.get()
+            day3 = self.day3_entry.get()
+            start3 = self.start3_entry.get()
+            end3 = self.end3_entry.get()
 
+            # Validate input
+            if not course_id.isdigit():
+                self.textbox.insert(tk.END, "Error: Course ID must be a number.\n")
+                return
+            if not course_name:
+                self.textbox.insert(tk.END, "Error: Course Name cannot be empty.\n")
+                return
+            if not day1.isalpha():
+                self.textbox.insert(tk.END, "Error: Day 1 cannot be empty.\n")
+                return
+            if not start1.__contains__(":") or not start1.split(":")[0].isdigit or not start1.split(":")[1].isdigit or not end1.__contains__(":") or not end1.split(":")[0].isdigit() or not end1.split(":")[1].isdigit():
+                self.textbox.insert(tk.END, "Error: Start Time and End Time for Day 1 must be numbers.\n")
+                return
+            if not day2.isalpha():
+                self.textbox.insert(tk.END, "Error: Start Time and End Time for Day 2 must be numbers.\n")
+                return
+            if day2 and (not start2.__contains__(":") or not start2.split(":")[0].isdigit or not start2.split(":")[1].isdigit or not end2.__contains__(":") or not end2.split(":")[0].isdigit() or not end2.split(":")[1].isdigit()):
+                self.textbox.insert(tk.END, "Error: Start Time and End Time for Day 2 must be numbers.\n")
+                return 
+            if day3 and not day3.isalpha():
+                self.textbox.insert(tk.END, "Error: Day 3 must be a letter.\n")
+                return
+            if day3 and (not start3.__contains__(":") or not start3.split(":")[0].isdigit or not start3.split(":")[1].isdigit or not end3.__contains__(":") or not end3.split(":")[0].isdigit() or not end3.split(":")[1].isdigit()):
+                self.textbox.insert(tk.END, "Error: Start Time and End Time for Day 3 must be numbers.\n")
+                return
+            # give a message if the course is added successfully
+            self.textbox.delete(1.0, tk.END)
+            self.textbox.insert(tk.END, "Course added successfully.\n")
+            course = Schedule(int(course_id), course_name, day1, start1, end1, day2, start2, end2, day3, start3, end3)
+            # show the course in the textbox in one line
+            self.textbox.insert(tk.END, f"{course.id} {course.name} {course.day1} {course.start_time} {course.end_time} {course.day2} {course.start_time2} {course.end_time2} {course.day3} {course.start_time3} {course.end_time3}\n")
+            # add the course to the list of courses
+            self.course_list.append(course)
+            # clear the entry boxes for new courses to be added
+            self.id_entry.delete(0, tk.END)
+            self.name_entry.delete(0, tk.END)
+            self.day1_entry.delete(0, tk.END)
+            self.start1_entry.delete(0, tk.END)
+            self.end1_entry.delete(0, tk.END)
+            self.day2_entry.delete(0, tk.END)
+            self.start2_entry.delete(0, tk.END)
+            self.end2_entry.delete(0, tk.END)
+            self.day3_entry.delete(0, tk.END)
+            self.start3_entry.delete(0, tk.END)
+            self.end3_entry.delete(0, tk.END)
+    # generate the schedules
     def generate_schedules(self):
         generator = ScheduleGenerator(self.course_list)
         schedules = generator.generateSchedules()
         for schedule in schedules:
             generator.printSchedule(schedule)
-
+            
 root = tk.Tk()
 gui = ScheduleGeneratorGUI(root)
 root.mainloop()
